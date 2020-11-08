@@ -16,7 +16,7 @@ int main (int argc, char * argv[]) {
     fprintf(stderr, "heuristic: %c\n", heuristic );
 
     int search_depth = 6;
-    if (arena_size == 6) search_depth = 8;
+    if (arena_size == 6) search_depth = 7;
     core_ai bot(my_color, search_depth, arena_size, heuristic);
 
     string cmd;
