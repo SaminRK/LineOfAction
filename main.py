@@ -1,16 +1,9 @@
-import pygame
 import pygame_menu
 import sys
 import subprocess
 import threading
+from draw import *
 from pygame.locals import *
-
-red = (255, 0, 0)
-green = (0, 255, 0)
-blue = (0, 0, 255)
-white = (255, 255, 255)
-gold = (207, 173, 52)
-black = (0, 0, 0)
 
 
 class LineOfAction:
@@ -37,9 +30,15 @@ class LineOfAction:
         self.board_written = False
         self.humans_turn = False
 
+        self.drawer = Draw(self.screen, self.box_size, self.guti_radius)
+
         self.menu = pygame_menu.Menu(350, 400, 'Line of Action')
-        self.menu.add_selector('Black: ', [('HUMAN', 0), ('MACHINE', 1)], onchange=self.set_player_black)
-        self.menu.add_selector('White: ', [('HUMAN', 0), ('MACHINE', 1)], onchange=self.set_player_white)
+        self.menu.add_selector('Black: ',
+                               [('HUMAN', 0), ('MACHINE-T', 1), ('MACHINE-Q', 2), ('MACHINE-A', 3), ('MACHINE-AT', 4)],
+                               onchange=self.set_player_black)
+        self.menu.add_selector('White: ',
+                               [('HUMAN', 0), ('MACHINE-T', 1), ('MACHINE-Q', 2), ('MACHINE-A', 3), ('MACHINE-AT', 4)],
+                               onchange=self.set_player_white)
         self.menu.add_selector('Arena Size: ', [('8*8', 0), ('6*6', 1)], onchange=self.set_arena_size)
         self.menu.add_button('PLAY', self.start_game)
         self.menu.add_button('QUIT', pygame_menu.events.EXIT)
@@ -57,21 +56,37 @@ class LineOfAction:
         self.board = self.make_board(self.arena_size)
 
         # initiate AIs
-        if self.player_white == 1:
+        if self.player_white != 0:
             print("white is ai")
-            self.machine_white = subprocess.Popen(['./ai', 'W', str(self.arena_size)], stdout=subprocess.PIPE, stdin=subprocess.PIPE,
+            self.machine_white = subprocess.Popen(['./ai', 'W', str(self.arena_size),
+                                                   self.index_to_heuristic_code(self.player_white)],
+                                                  stdout=subprocess.PIPE, stdin=subprocess.PIPE,
                                                   universal_newlines=True, bufsize=1)
         else:
             print("white is human")
 
-        if self.player_black == 1:
+        if self.player_black != 0:
             print("black is ai")
-            self.machine_black = subprocess.Popen(['./ai', 'B', str(self.arena_size)], stdout=subprocess.PIPE, stdin=subprocess.PIPE,
+            self.machine_black = subprocess.Popen(['./ai', 'B', str(self.arena_size),
+                                                   self.index_to_heuristic_code(self.player_black)],
+                                                  stdout=subprocess.PIPE, stdin=subprocess.PIPE,
                                                   universal_newlines=True, bufsize=1)
         else:
             print("black is human")
 
         self.setup_next_player()
+
+    def index_to_heuristic_code(self, index):
+        if index == 1:
+            heuristic = 'T'
+        elif index == 2:
+            heuristic = 'Q'
+        elif index == 3:
+            heuristic = 'A'
+        else:
+            heuristic = 'B'
+
+        return heuristic
 
     def make_board(self, size):
         board = None
@@ -112,7 +127,7 @@ class LineOfAction:
             if not winner and not self.main_menu:  # if user has not already gone to the main menu
                 self.setup_next_player()
             else:
-                self.draw_win(winner)
+                self.drawer.draw_win(self.board, self.arena_size, winner)
         else:
             raise Exception("AI ", machine, color, " has given invalid move ", move)
 
@@ -203,7 +218,7 @@ class LineOfAction:
         else:
             print("move will be made by machine")
 
-        self.redraw()
+        self.drawer.redraw(self.board, self.arena_size, self.turn)
         pygame.display.update()
 
         if not self.humans_turn:
@@ -212,37 +227,6 @@ class LineOfAction:
             else:
                 ai_handler = threading.Thread(target=self.handle_ai, args=(self.machine_white, 'W',))
             ai_handler.start()
-
-    def draw_box(self, color, position):
-        pygame.draw.rect(self.screen, color, (position[0], position[1], self.box_size, self.box_size), 1)
-
-    def draw_guti(self, color, position):
-        pygame.draw.circle(self.screen, color, position, self.guti_radius, self.guti_radius)
-
-    def draw_board(self):
-        for y in range(self.arena_size):
-            for x in range(self.arena_size):
-                self.draw_box(black, (x * self.box_size, y * self.box_size))
-                if self.board[y][x] == 'B':
-                    self.draw_guti(black, (
-                        int(x * self.box_size + self.box_size / 2), int(y * self.box_size + self.box_size / 2)))
-                elif self.board[y][x] == 'W':
-                    self.draw_guti(white, (
-                        int(x * self.box_size + self.box_size / 2), int(y * self.box_size + self.box_size / 2)))
-
-    def write_text(self):
-        next_turn = "Turn: "
-        if self.turn == 'B':
-            next_turn += "BLACK"
-        else:
-            next_turn += "WHITE"
-        if pygame.font:
-            font = pygame.font.Font(None, 24)
-            text = font.render(next_turn, 1, black)
-            self.screen.blit(text, (400, 50))
-
-    def mark_pointer(self, position):
-        pygame.draw.circle(self.screen, green, position, 3, 3)
 
     def handle_click_box(self, click_position):
         box_index = (int(click_position[0] / self.box_size), int(click_position[1] / self.box_size))
@@ -260,23 +244,23 @@ class LineOfAction:
             if not winner:
                 self.setup_next_player()
             else:
-                self.draw_win(winner)
+                self.drawer.draw_win(self.board, self.arena_size, winner)
 
         else:
             self.valid_moves.clear()
-            self.redraw()
+            self.drawer.redraw(self.board, self.arena_size, self.turn)
             if 0 <= box_index[0] < self.arena_size and 0 <= box_index[1] < self.arena_size:
                 if self.board[box_index[1]][box_index[0]] == self.turn:
                     self.mark_moves(box_index)
                 self.source = box_index
-                self.mark_pointer(marker_position)
+                self.drawer.mark_pointer(marker_position)
             pygame.display.update()
 
     def make_move(self, source, target):
         self.board[target[1]][target[0]] = self.board[source[1]][source[0]]
         self.board[source[1]][source[0]] = ' '
 
-        self.redraw()
+        self.drawer.redraw(self.board, self.arena_size, self.turn)
         self.valid_moves.clear()
         pygame.display.update()
 
@@ -319,25 +303,7 @@ class LineOfAction:
                     target_pos = (int(target_x * self.box_size + self.box_size / 2),
                                   int(target_y * self.box_size + self.box_size / 2))
                     pygame.draw.line(self.screen, blue, my_pos, target_pos, 2)
-                    self.mark_pointer(target_pos)
-
-    '''
-        only draws the board... must update screen to make the drawings visible
-    '''
-    def redraw(self):
-        self.screen.fill(gold)
-        self.draw_board()
-        self.draw_back_button()
-        self.write_text()
-
-    def draw_back_button(self):
-        pygame.draw.line(self.screen, green, (400, 150), (500, 150), 40)
-        pygame.draw.rect(self.screen, black, (400, 130, 100, 40), 2)
-        back_text = "<< BACK"
-        if pygame.font:
-            font = pygame.font.Font(None, 24)
-            text = font.render(back_text, 1, black)
-            self.screen.blit(text, (420, 145))
+                    self.drawer.mark_pointer(target_pos)
 
     def check_win_both(self, source):
         if self.check_win(source):
@@ -377,27 +343,6 @@ class LineOfAction:
                     present += 1
 
         return marked == present
-
-    def draw_win(self, winner):
-        self.screen.fill(gold)
-        self.draw_board()
-        self.write_win(winner)
-        self.draw_back_button()
-        pygame.display.update()
-
-    def write_win(self, winner):
-        win_text = ""
-        if winner == 'B':
-            win_text += "BLACK"
-        else:
-            win_text += "WHITE"
-
-        win_text += " has won"
-
-        if pygame.font:
-            font = pygame.font.Font(None, 24)
-            text = font.render(win_text, 1, black)
-            self.screen.blit(text, (400, 50))
 
     def game_intro(self):
         # close running AIs if there are any
@@ -445,7 +390,7 @@ class LineOfAction:
         self.game_loop()
 
     def game_loop(self):
-        self.redraw()
+        self.drawer.redraw(self.board, self.arena_size, self.turn)
         pygame.display.update()
 
         while True:

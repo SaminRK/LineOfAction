@@ -11,8 +11,13 @@ int main (int argc, char * argv[]) {
 
     char my_color = argv[1][0];
     int arena_size = atoi(argv[2]);
+    char heuristic = 'T';
+    if (argc > 3) heuristic = argv[3][0];
+    fprintf(stderr, "heuristic: %c\n", heuristic );
 
-    core_ai bot(my_color, 6, arena_size);
+    int search_depth = 6;
+    if (arena_size == 6) search_depth = 8;
+    core_ai bot(my_color, search_depth, arena_size, heuristic);
 
     string cmd;
 
