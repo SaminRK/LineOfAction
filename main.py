@@ -219,7 +219,7 @@ class LineOfAction:
             print("move will be made by machine")
 
         self.drawer.redraw(self.board, self.arena_size, self.turn)
-        pygame.display.update()
+        self.drawer.update()
 
         if not self.humans_turn:
             if self.turn == 'B':
@@ -254,7 +254,7 @@ class LineOfAction:
                     self.mark_moves(box_index)
                 self.source = box_index
                 self.drawer.mark_pointer(marker_position)
-            pygame.display.update()
+            self.drawer.update()
 
     def make_move(self, source, target):
         self.board[target[1]][target[0]] = self.board[source[1]][source[0]]
@@ -262,7 +262,7 @@ class LineOfAction:
 
         self.drawer.redraw(self.board, self.arena_size, self.turn)
         self.valid_moves.clear()
-        pygame.display.update()
+        self.drawer.update()
 
     def mark_moves(self, position):
         my_pos = (
@@ -391,7 +391,7 @@ class LineOfAction:
 
     def game_loop(self):
         self.drawer.redraw(self.board, self.arena_size, self.turn)
-        pygame.display.update()
+        self.drawer.update()
 
         while True:
             event = pygame.event.wait()  # AIs cannot play freely if loop is stuck here

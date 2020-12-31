@@ -87,3 +87,6 @@ class Draw:
             font = pygame.font.Font(None, 24)
             text = font.render(win_text, 1, black)
             self.screen.blit(text, (400, 50))
+
+    def update(self):
+        pygame.display.update()
