@@ -1,4 +1,5 @@
 ## LINE OF ACTION
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 ![Line of Action](https://github.com/SaminRK/LineOfAction/blob/master/media/loa.gif)
 
 Line of Action 1 vs 1 (Human, PC) game made as part of coursework for "CSE318: Artificial Intelligence Sessional"

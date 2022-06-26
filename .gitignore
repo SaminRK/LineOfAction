@@ -9,5 +9,5 @@
 
 /venv
 .idea
-rough.txt
 __pycache__/
+.vscode/

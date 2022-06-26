@@ -18,7 +18,7 @@ class LineOfAction:
 
         self.box_size = 40
         self.guti_radius = 16
-        self.turn = 'W'  # B = black's turn; W = white's turn
+        self.turn = "W"  # B = black's turn; W = white's turn
         self.arena_size = 8
         self.valid_moves = []
         self.source = None  # marks selected tile by human user for making move
@@ -32,16 +32,34 @@ class LineOfAction:
 
         self.drawer = Draw(self.screen, self.box_size, self.guti_radius)
 
-        self.menu = pygame_menu.Menu(350, 400, 'Line of Action')
-        self.menu.add_selector('Black: ',
-                               [('HUMAN', 0), ('MACHINE-T', 1), ('MACHINE-Q', 2), ('MACHINE-A', 3), ('MACHINE-AT', 4)],
-                               onchange=self.set_player_black)
-        self.menu.add_selector('White: ',
-                               [('HUMAN', 0), ('MACHINE-T', 1), ('MACHINE-Q', 2), ('MACHINE-A', 3), ('MACHINE-AT', 4)],
-                               onchange=self.set_player_white)
-        self.menu.add_selector('Arena Size: ', [('8*8', 0), ('6*6', 1)], onchange=self.set_arena_size)
-        self.menu.add_button('PLAY', self.start_game)
-        self.menu.add_button('QUIT', pygame_menu.events.EXIT)
+        self.menu = pygame_menu.Menu(350, 400, "Line of Action")
+        self.menu.add_selector(
+            "Black: ",
+            [
+                ("HUMAN", 0),
+                ("MACHINE-T", 1),
+                ("MACHINE-Q", 2),
+                ("MACHINE-A", 3),
+                ("MACHINE-AT", 4),
+            ],
+            onchange=self.set_player_black,
+        )
+        self.menu.add_selector(
+            "White: ",
+            [
+                ("HUMAN", 0),
+                ("MACHINE-T", 1),
+                ("MACHINE-Q", 2),
+                ("MACHINE-A", 3),
+                ("MACHINE-AT", 4),
+            ],
+            onchange=self.set_player_white,
+        )
+        self.menu.add_selector(
+            "Arena Size: ", [("8*8", 0), ("6*6", 1)], onchange=self.set_arena_size
+        )
+        self.menu.add_button("PLAY", self.start_game)
+        self.menu.add_button("QUIT", pygame_menu.events.EXIT)
 
         self.main_menu = True
 
@@ -50,7 +68,7 @@ class LineOfAction:
         self.machine_black = None
 
     def game_setup(self):
-        self.turn = 'W'  # B = black's turn; W = white's turn
+        self.turn = "W"  # B = black's turn; W = white's turn
         self.valid_moves = []
         self.source = None
         self.board = self.make_board(self.arena_size)
@@ -58,19 +76,35 @@ class LineOfAction:
         # initiate AIs
         if self.player_white != 0:
             print("white is ai")
-            self.machine_white = subprocess.Popen(['./ai', 'W', str(self.arena_size),
-                                                   self.index_to_heuristic_code(self.player_white)],
-                                                  stdout=subprocess.PIPE, stdin=subprocess.PIPE,
-                                                  universal_newlines=True, bufsize=1)
+            self.machine_white = subprocess.Popen(
+                [
+                    "./ai",
+                    "W",
+                    str(self.arena_size),
+                    self.index_to_heuristic_code(self.player_white),
+                ],
+                stdout=subprocess.PIPE,
+                stdin=subprocess.PIPE,
+                universal_newlines=True,
+                bufsize=1,
+            )
         else:
             print("white is human")
 
         if self.player_black != 0:
             print("black is ai")
-            self.machine_black = subprocess.Popen(['./ai', 'B', str(self.arena_size),
-                                                   self.index_to_heuristic_code(self.player_black)],
-                                                  stdout=subprocess.PIPE, stdin=subprocess.PIPE,
-                                                  universal_newlines=True, bufsize=1)
+            self.machine_black = subprocess.Popen(
+                [
+                    "./ai",
+                    "B",
+                    str(self.arena_size),
+                    self.index_to_heuristic_code(self.player_black),
+                ],
+                stdout=subprocess.PIPE,
+                stdin=subprocess.PIPE,
+                universal_newlines=True,
+                bufsize=1,
+            )
         else:
             print("black is human")
 
@@ -78,13 +112,13 @@ class LineOfAction:
 
     def index_to_heuristic_code(self, index):
         if index == 1:
-            heuristic = 'T'
+            heuristic = "T"
         elif index == 2:
-            heuristic = 'Q'
+            heuristic = "Q"
         elif index == 3:
-            heuristic = 'A'
+            heuristic = "A"
         else:
-            heuristic = 'B'
+            heuristic = "B"
 
         return heuristic
 
@@ -92,23 +126,23 @@ class LineOfAction:
         board = None
         if size == 8:
             board = [
-                [' ', 'B', 'B', 'B', 'B', 'B', 'B', ' '],
-                ['W', ' ', ' ', ' ', ' ', ' ', ' ', 'W'],
-                ['W', ' ', ' ', ' ', ' ', ' ', ' ', 'W'],
-                ['W', ' ', ' ', ' ', ' ', ' ', ' ', 'W'],
-                ['W', ' ', ' ', ' ', ' ', ' ', ' ', 'W'],
-                ['W', ' ', ' ', ' ', ' ', ' ', ' ', 'W'],
-                ['W', ' ', ' ', ' ', ' ', ' ', ' ', 'W'],
-                [' ', 'B', 'B', 'B', 'B', 'B', 'B', ' '],
+                [" ", "B", "B", "B", "B", "B", "B", " "],
+                ["W", " ", " ", " ", " ", " ", " ", "W"],
+                ["W", " ", " ", " ", " ", " ", " ", "W"],
+                ["W", " ", " ", " ", " ", " ", " ", "W"],
+                ["W", " ", " ", " ", " ", " ", " ", "W"],
+                ["W", " ", " ", " ", " ", " ", " ", "W"],
+                ["W", " ", " ", " ", " ", " ", " ", "W"],
+                [" ", "B", "B", "B", "B", "B", "B", " "],
             ]
         elif size == 6:
             board = [
-                [' ', 'B', 'B', 'B', 'B', ' '],
-                ['W', ' ', ' ', ' ', ' ', 'W'],
-                ['W', ' ', ' ', ' ', ' ', 'W'],
-                ['W', ' ', ' ', ' ', ' ', 'W'],
-                ['W', ' ', ' ', ' ', ' ', 'W'],
-                [' ', 'B', 'B', 'B', 'B', ' '],
+                [" ", "B", "B", "B", "B", " "],
+                ["W", " ", " ", " ", " ", "W"],
+                ["W", " ", " ", " ", " ", "W"],
+                ["W", " ", " ", " ", " ", "W"],
+                ["W", " ", " ", " ", " ", "W"],
+                [" ", "B", "B", "B", "B", " "],
             ]
         return board
 
@@ -117,14 +151,16 @@ class LineOfAction:
             return
         brd = self.board_string()
         print(brd, file=machine.stdin, flush=True, end="")
-        move = machine.stdout.readline().strip('\n').split(" ")
+        move = machine.stdout.readline().strip("\n").split(" ")
         source = (int(move[0]), int(move[1]))
         target = (int(move[2]), int(move[3]))
         valid = self.check_valid_move(source, target, color)  # make source target pairs
         if valid:
             self.make_move(source, target)
             winner = self.check_win_both(target)
-            if not winner and not self.main_menu:  # if user has not already gone to the main menu
+            if (
+                not winner and not self.main_menu
+            ):  # if user has not already gone to the main menu
                 self.setup_next_player()
             else:
                 self.drawer.draw_win(self.board, self.arena_size, winner)
@@ -136,7 +172,12 @@ class LineOfAction:
             print("source tile does not have correct guti")
             return False
 
-        if target[0] < 0 or target[0] >= self.arena_size or target[1] < 0 or target[1] >= self.arena_size:
+        if (
+            target[0] < 0
+            or target[0] >= self.arena_size
+            or target[1] < 0
+            or target[1] >= self.arena_size
+        ):
             print("target out of board")
             return False
 
@@ -180,7 +221,7 @@ class LineOfAction:
             x = source[0] + (moves + 1) * self.dx[direction]
             y = source[1] + (moves + 1) * self.dy[direction]
             if 0 <= x < self.arena_size and 0 <= y < self.arena_size:
-                if self.board[y][x] != ' ':
+                if self.board[y][x] != " ":
                     count += 1
             else:
                 break
@@ -188,21 +229,21 @@ class LineOfAction:
             x = source[0] - (moves + 1) * self.dx[direction]
             y = source[1] - (moves + 1) * self.dy[direction]
             if 0 <= x < self.arena_size and 0 <= y < self.arena_size:
-                if self.board[y][x] != ' ':
+                if self.board[y][x] != " ":
                     count += 1
             else:
                 break
         return max(abs(source[0] - target[0]), abs(source[1] - target[1])) == count
 
     def setup_next_player(self):
-        if self.turn == 'B':
-            self.turn = 'W'
+        if self.turn == "B":
+            self.turn = "W"
         else:
-            self.turn = 'B'
+            self.turn = "B"
 
         print("next turn is from: ", self.turn)
 
-        if self.turn == 'B':
+        if self.turn == "B":
             if self.player_black == 0:
                 self.humans_turn = True
             else:
@@ -222,17 +263,33 @@ class LineOfAction:
         self.drawer.update()
 
         if not self.humans_turn:
-            if self.turn == 'B':
-                ai_handler = threading.Thread(target=self.handle_ai, args=(self.machine_black, 'B',))
+            if self.turn == "B":
+                ai_handler = threading.Thread(
+                    target=self.handle_ai,
+                    args=(
+                        self.machine_black,
+                        "B",
+                    ),
+                )
             else:
-                ai_handler = threading.Thread(target=self.handle_ai, args=(self.machine_white, 'W',))
+                ai_handler = threading.Thread(
+                    target=self.handle_ai,
+                    args=(
+                        self.machine_white,
+                        "W",
+                    ),
+                )
             ai_handler.start()
 
     def handle_click_box(self, click_position):
-        box_index = (int(click_position[0] / self.box_size), int(click_position[1] / self.box_size))
+        box_index = (
+            int(click_position[0] / self.box_size),
+            int(click_position[1] / self.box_size),
+        )
         marker_position = (
             int(box_index[0] * self.box_size + self.box_size / 2),
-            int(box_index[1] * self.box_size + self.box_size / 2))
+            int(box_index[1] * self.box_size + self.box_size / 2),
+        )
 
         is_valid_move = False
         for position in self.valid_moves:
@@ -249,7 +306,10 @@ class LineOfAction:
         else:
             self.valid_moves.clear()
             self.drawer.redraw(self.board, self.arena_size, self.turn)
-            if 0 <= box_index[0] < self.arena_size and 0 <= box_index[1] < self.arena_size:
+            if (
+                0 <= box_index[0] < self.arena_size
+                and 0 <= box_index[1] < self.arena_size
+            ):
                 if self.board[box_index[1]][box_index[0]] == self.turn:
                     self.mark_moves(box_index)
                 self.source = box_index
@@ -258,7 +318,7 @@ class LineOfAction:
 
     def make_move(self, source, target):
         self.board[target[1]][target[0]] = self.board[source[1]][source[0]]
-        self.board[source[1]][source[0]] = ' '
+        self.board[source[1]][source[0]] = " "
 
         self.drawer.redraw(self.board, self.arena_size, self.turn)
         self.valid_moves.clear()
@@ -266,7 +326,9 @@ class LineOfAction:
 
     def mark_moves(self, position):
         my_pos = (
-            int(position[0] * self.box_size + self.box_size / 2), int(position[1] * self.box_size + self.box_size / 2))
+            int(position[0] * self.box_size + self.box_size / 2),
+            int(position[1] * self.box_size + self.box_size / 2),
+        )
         self.valid_moves.clear()
         for i in range(8):
             gutis = 1
@@ -274,7 +336,7 @@ class LineOfAction:
                 x = position[0] + (moves + 1) * self.dx[i]
                 y = position[1] + (moves + 1) * self.dy[i]
                 if 0 <= x < self.arena_size and 0 <= y < self.arena_size:
-                    if self.board[y][x] != ' ':
+                    if self.board[y][x] != " ":
                         gutis += 1
                 else:
                     break
@@ -282,26 +344,33 @@ class LineOfAction:
                 x = position[0] - (moves + 1) * self.dx[i]
                 y = position[1] - (moves + 1) * self.dy[i]
                 if 0 <= x < self.arena_size and 0 <= y < self.arena_size:
-                    if self.board[y][x] != ' ':
+                    if self.board[y][x] != " ":
                         gutis += 1
                 else:
                     break
             target_x = position[0] + gutis * self.dx[i]
             target_y = position[1] + gutis * self.dy[i]
-            if 0 <= target_x < self.arena_size and 0 <= target_y < self.arena_size and \
-                    self.board[target_y][target_x] != self.turn:
+            if (
+                0 <= target_x < self.arena_size
+                and 0 <= target_y < self.arena_size
+                and self.board[target_y][target_x] != self.turn
+            ):
                 possible = True
                 for moves in range(gutis - 1):
                     x = position[0] + (moves + 1) * self.dx[i]
                     y = position[1] + (moves + 1) * self.dy[i]
-                    if self.board[y][x] != ' ' and self.board[y][x] != self.turn:  # opponent's guti
+                    if (
+                        self.board[y][x] != " " and self.board[y][x] != self.turn
+                    ):  # opponent's guti
                         possible = False
                         break
 
                 if possible:
                     self.valid_moves.append((target_x, target_y))
-                    target_pos = (int(target_x * self.box_size + self.box_size / 2),
-                                  int(target_y * self.box_size + self.box_size / 2))
+                    target_pos = (
+                        int(target_x * self.box_size + self.box_size / 2),
+                        int(target_y * self.box_size + self.box_size / 2),
+                    )
                     pygame.draw.line(self.screen, blue, my_pos, target_pos, 2)
                     self.drawer.mark_pointer(target_pos)
 
@@ -311,7 +380,10 @@ class LineOfAction:
 
         for y in range(self.arena_size):
             for x in range(self.arena_size):
-                if self.board[y][x] != ' ' and self.board[y][x] != self.board[source[1]][source[0]]:  # opponent
+                if (
+                    self.board[y][x] != " "
+                    and self.board[y][x] != self.board[source[1]][source[0]]
+                ):  # opponent
                     if self.check_win((x, y)):
                         return self.board[y][x]
                     else:
@@ -330,8 +402,12 @@ class LineOfAction:
             for i in range(8):
                 x = u[0] + self.dx[i]
                 y = u[1] + self.dy[i]
-                if 0 <= x < self.arena_size and 0 <= y < self.arena_size and \
-                        not visited[y][x] and self.board[y][x] == self.board[source[1]][source[0]]:
+                if (
+                    0 <= x < self.arena_size
+                    and 0 <= y < self.arena_size
+                    and not visited[y][x]
+                    and self.board[y][x] == self.board[source[1]][source[0]]
+                ):
                     marked += 1
                     visited[y][x] = True
                     queue.append((x, y))
@@ -375,11 +451,11 @@ class LineOfAction:
 
         for y in range(self.arena_size):
             for x in range(self.arena_size):
-                if self.board[y][x] == ' ':
-                    board_str += '.'
+                if self.board[y][x] == " ":
+                    board_str += "."
                 else:
                     board_str += self.board[y][x]
-            board_str += '\n'
+            board_str += "\n"
 
         return board_str
 
