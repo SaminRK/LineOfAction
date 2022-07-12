@@ -17,9 +17,7 @@ class Draw:
         )
 
     def draw_guti(self, color, position):
-        pygame.draw.circle(
-            self.screen, color, position, self.guti_radius, self.guti_radius
-        )
+        pygame.draw.circle(self.screen, color, position, self.guti_radius, self.guti_radius)
 
     def draw_board(self, board, arena_size):
         for y in range(arena_size):

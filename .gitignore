@@ -7,7 +7,7 @@
 # Unignore all dirs
 !*/
 
-/venv
+.venv/
 .idea
 __pycache__/
 .vscode/

@@ -1,0 +1,40 @@
+[tool.poetry]
+name = "lineofaction"
+version = "0.1.0"
+description = ""
+authors = ["Samin Rahman Khan <saminrahmankhan97@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pygame = "^2.1.2"
+pygame-menu = "^4.2.8"
+
+[tool.poetry.dev-dependencies]
+black = "^22.6.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 120
+target-version = ['py38', 'py39']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  # The following are specific to Black, you probably don't want those.
+  | blib2to3
+  | tests/data
+  | profiling
+)/
+'''

@@ -32,8 +32,8 @@ class LineOfAction:
 
         self.drawer = Draw(self.screen, self.box_size, self.guti_radius)
 
-        self.menu = pygame_menu.Menu(350, 400, "Line of Action")
-        self.menu.add_selector(
+        self.menu = pygame_menu.Menu("Line of Action", 350, 400)
+        self.menu.add.selector(
             "Black: ",
             [
                 ("HUMAN", 0),
@@ -44,7 +44,7 @@ class LineOfAction:
             ],
             onchange=self.set_player_black,
         )
-        self.menu.add_selector(
+        self.menu.add.selector(
             "White: ",
             [
                 ("HUMAN", 0),
@@ -55,11 +55,9 @@ class LineOfAction:
             ],
             onchange=self.set_player_white,
         )
-        self.menu.add_selector(
-            "Arena Size: ", [("8*8", 0), ("6*6", 1)], onchange=self.set_arena_size
-        )
-        self.menu.add_button("PLAY", self.start_game)
-        self.menu.add_button("QUIT", pygame_menu.events.EXIT)
+        self.menu.add.selector("Arena Size: ", [("8*8", 0), ("6*6", 1)], onchange=self.set_arena_size)
+        self.menu.add.button("PLAY", self.start_game)
+        self.menu.add.button("QUIT", pygame_menu.events.EXIT)
 
         self.main_menu = True
 
@@ -158,9 +156,7 @@ class LineOfAction:
         if valid:
             self.make_move(source, target)
             winner = self.check_win_both(target)
-            if (
-                not winner and not self.main_menu
-            ):  # if user has not already gone to the main menu
+            if not winner and not self.main_menu:  # if user has not already gone to the main menu
                 self.setup_next_player()
             else:
                 self.drawer.draw_win(self.board, self.arena_size, winner)
@@ -172,12 +168,7 @@ class LineOfAction:
             print("source tile does not have correct guti")
             return False
 
-        if (
-            target[0] < 0
-            or target[0] >= self.arena_size
-            or target[1] < 0
-            or target[1] >= self.arena_size
-        ):
+        if target[0] < 0 or target[0] >= self.arena_size or target[1] < 0 or target[1] >= self.arena_size:
             print("target out of board")
             return False
 
@@ -306,10 +297,7 @@ class LineOfAction:
         else:
             self.valid_moves.clear()
             self.drawer.redraw(self.board, self.arena_size, self.turn)
-            if (
-                0 <= box_index[0] < self.arena_size
-                and 0 <= box_index[1] < self.arena_size
-            ):
+            if 0 <= box_index[0] < self.arena_size and 0 <= box_index[1] < self.arena_size:
                 if self.board[box_index[1]][box_index[0]] == self.turn:
                     self.mark_moves(box_index)
                 self.source = box_index
@@ -359,9 +347,7 @@ class LineOfAction:
                 for moves in range(gutis - 1):
                     x = position[0] + (moves + 1) * self.dx[i]
                     y = position[1] + (moves + 1) * self.dy[i]
-                    if (
-                        self.board[y][x] != " " and self.board[y][x] != self.turn
-                    ):  # opponent's guti
+                    if self.board[y][x] != " " and self.board[y][x] != self.turn:  # opponent's guti
                         possible = False
                         break
 
@@ -380,10 +366,7 @@ class LineOfAction:
 
         for y in range(self.arena_size):
             for x in range(self.arena_size):
-                if (
-                    self.board[y][x] != " "
-                    and self.board[y][x] != self.board[source[1]][source[0]]
-                ):  # opponent
+                if self.board[y][x] != " " and self.board[y][x] != self.board[source[1]][source[0]]:  # opponent
                     if self.check_win((x, y)):
                         return self.board[y][x]
                     else:
